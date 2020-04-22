@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 
 
-from .serializer import AppSer, testser
+from .serializer import AppSer
 from .models import Apps
 
 import time
@@ -22,11 +22,11 @@ class AppView(APIView):
 
     def post(self, request, KeyApi):
         data = request.data.get('newapp')
-        if type(data) != 'dict':
-            data = {'KeyApi':''}
 
-        data['KeyApi'] = time.time()
-        
+        try:
+            data['KeyApi'] = time.time()
+        except:
+            data = {'KeyApi':''}
         Ser = AppSer(data=data)
         NewKeyApi = ''
             
@@ -53,17 +53,19 @@ class AppView(APIView):
 
         return Response({'success': '{}'.format(saved)})
 
+    def delete(self, request, KeyApi):
+        SelectApp = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
+        delet = False
+        if SelectApp.delete():
+            delet = True
+        return Response({'success': '{}'.format(delet)})
 
+class UpdateKeyApi(APIView):
+    def get(self, request, KeyApi):
+        SelectApp = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
+        
+        SelectApp.KeyApi = time.time()
+        SelectApp.save()
 
+        return Response({'seccess': True, 'NewKeyApi': SelectApp.KeyApi})
 
-
-
-
-
-def MainPage(request):
-    ser = testser(data={'Name': 'testname', 'sisk':'ggvp'})
-    if ser.is_valid():
-        saved = ser.save().Name
-    return HttpResponse('it is work: {}'.format(saved))
-
-    

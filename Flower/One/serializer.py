@@ -15,8 +15,3 @@ class AppSer(serializers.Serializer):
         instance.save()
 
         return instance
-
-class testser(serializers.Serializer):
-    Name = serializers.CharField()
-    def create(self, validated_data):
-        return Apps.objects.create(**validated_data)
