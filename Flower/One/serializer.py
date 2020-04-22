@@ -1,11 +1,22 @@
 from rest_framework import serializers
-from .models import APPModels
-class AppGetSerializer(serializers.Serializer):
-    Name = serializers.CharField(max_length=255)
-    KeyApi = serializers.CharField(max_length=255)
+from .models import Apps
 
-class AppPostSerializer(serializers.Serializer):
+class AppSer(serializers.Serializer):
     Name = serializers.CharField()
+    Des = serializers.CharField()
+    KeyApi = serializers.CharField()
 
+    def create(self, validated_date):
+        return Apps.objects.create(**validated_date)
+
+    def update(self, instance, validated_date):
+        instance.Name = validated_date.get('Name', instance.Name)
+        instance.Des = validated_date.get('Des', instance.Des)
+        instance.save()
+
+        return instance
+
+class testser(serializers.Serializer):
+    Name = serializers.CharField()
     def create(self, validated_data):
-        return APPModels.objects.create(**validated_data)
+        return Apps.objects.create(**validated_data)

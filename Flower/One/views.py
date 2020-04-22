@@ -1,58 +1,69 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-# Create your views here.
+from django.shortcuts import get_object_or_404
 
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+
+
+from .serializer import AppSer, testser
+from .models import Apps
+
 import time
 
-from .models import APPModels
-from .serializer import AppGetSerializer, AppPostSerializer
+class AppView(APIView):
+
+    def get(self, request, KeyApi):
+        new_app = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
+        Ser = AppSer(new_app)
+
+        return Response({"app":Ser.data})
+
+    def post(self, request, KeyApi):
+        data = request.data.get('newapp')
+        if type(data) != 'dict':
+            data = {'KeyApi':''}
+
+        data['KeyApi'] = time.time()
+        
+        Ser = AppSer(data=data)
+        NewKeyApi = ''
+            
+        if Ser.is_valid():
+            NewKeyApi = Ser.save().KeyApi
+            saved = True
+        else:
+            saved = False
+        return Response({'success':'{}'.format(saved), 'KeyApi': NewKeyApi})
+    
+    def put(self, request, KeyApi):
+        SelectApp = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
+        data = request.data.get('updateapp')
+        if type(data) != 'dict':
+            data = {'':''}
+        
+        Ser = AppSer(instance=SelectApp, data=data, partial=True)
+
+        if Ser.is_valid(raise_exception=True):
+            Ser.save()
+            saved = True
+        else:
+            saved = False
+
+        return Response({'success': '{}'.format(saved)})
+
+
+
+
+
+
+
 
 def MainPage(request):
-    return HttpResponse('it is work')
-
-class AppView(APIView):
-    
-    def get(self, request, KeyApi):
-        SelectApp = get_object_or_404(APPModels.objects.all(),KeyApi=KeyApi)
-        ser = AppGetSerializer(SelectApp)
-        
-        return Response({'app': ser.data})
-    
-    def post(self, request, KeyApi):
-        data = request.data.get('app')
-
-        ser = AppPostSerializer(data=data)
-        if ser.is_valid(raise_exception=True):
-            print(ser)
-            new_app = ser.save()
-            print(new_app)
-            new_app.KeyApi = str(time.time())
-            new_app.save()
-        
-        return Response({'success':'{}'.format(new_app.KeyApi)}) 
-
-class CreateNewKeyApiView(APIView):
-    def get(self, request, KeyApi):
-        SelectApp = get_object_or_404(APPModels.objects.all(), KeyApi=KeyApi)
-        NewKeyApi = str(time.time())
-
-        SelectApp.KeyApi = NewKeyApi
-        return Response({'app':{'Name': SelectApp.Name, 'OldKeyApi': KeyApi, 'NewKeyApi': NewKeyApi}})
-
-class APPModelsView(APIView):
-
-    def get(self, request):
-        apps = APPModels.objects.all()
-
-        ser = AppSerializer(apps, many=True)
-        return Response({'apps': ser.data})
-    
-    def post(self, request):
-        print(request.data.get('app'))
-    
-        return Response('good')
+    ser = testser(data={'Name': 'testname', 'sisk':'ggvp'})
+    if ser.is_valid():
+        saved = ser.save().Name
+    return HttpResponse('it is work: {}'.format(saved))
 
     
