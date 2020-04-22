@@ -12,21 +12,14 @@ from .models import Apps
 
 import time
 
-class AppView(APIView):
-
-    def get(self, request, KeyApi):
-        new_app = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
-        Ser = AppSer(new_app)
-
-        return Response({"app":Ser.data})
-
-    def post(self, request, KeyApi):
+class AddAppView(APIView):
+    def post(self, request):
         data = request.data.get('newapp')
-
         try:
             data['KeyApi'] = time.time()
         except:
             data = {'KeyApi':''}
+
         Ser = AppSer(data=data)
         NewKeyApi = ''
             
@@ -36,6 +29,16 @@ class AppView(APIView):
         else:
             saved = False
         return Response({'success':'{}'.format(saved), 'KeyApi': NewKeyApi})
+
+
+class InfoAppView(APIView):
+
+    def get(self, request, KeyApi):
+        new_app = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
+        Ser = AppSer(new_app)
+
+        return Response({"app":Ser.data})
+
     
     def put(self, request, KeyApi):
         SelectApp = get_object_or_404(Apps.objects.all(), KeyApi=KeyApi)
