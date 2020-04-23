@@ -128,7 +128,7 @@ Filed `"seccess"` always will `"True"`.
 
 ### Get New token
 
-To update the token use `GET` method in `<host>/api/updatekey/`. You get JSON answer, which will have new 
+To update the token use `GET` method in `<host>/api/updatekey/<KeyApi>`. You get JSON answer, which will have new 
 `"KeyApi"` token your app.
 
 #### Code answer:
