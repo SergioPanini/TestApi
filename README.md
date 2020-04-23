@@ -22,8 +22,11 @@ All methods contain in `<host>/api/` and use JSON marking .
 
 First step is add new app in system and get `KeyApi` token that work this your app.
 
-Using POST method in `<host>/api/add/`, put JSON in field with name `_content`.
-JSON must have field `newapp`, which must have fields `Name` - it is name your app, `Des` - it is descriptor your app.
+Using `POST` method in `<host>/api/add/`, put JSON data in field with name `_content`.
+JSON data must have field `"newapp"`, which must have fields `"Name"` - it is name your app, `"Des"` - it is descriptor your app.
+
+#### Code answer:
+200
 
 #### Pattern JSON:
 ```
@@ -34,7 +37,7 @@ JSON must have field `newapp`, which must have fields `Name` - it is name your a
         }
 }
 ```
-#### Example JSON:
+#### Example:
 ```
 {
 "newapp":{
@@ -43,7 +46,7 @@ JSON must have field `newapp`, which must have fields `Name` - it is name your a
         }
 }
 ```
-This method answer `200` if app created and JSON, which will have `"success":"True"` and `"KeyApi": "1587603910.4631364"`
+This method answer `200`, if app created and JSON, which will have `"success":"True"` and `"KeyApi": "1587603910.4631364"`
 ##### Example JSON answer:
 ```
 {
@@ -52,12 +55,49 @@ This method answer `200` if app created and JSON, which will have `"success":"Tr
 }
 ```
 if app not add app you get `"seccess":"False"` and `"KeyApi":""`.
-#### Example
+#### Example:
 
 ```{
     "success": "False",
     "KeyApi": ""
 }
 ```
+### Get info about app
 
+Using `Get` method in `<host>/api/test/<KeyAPi>` for get info about your app.`<KeyApi>` - it is `KeyApi` token your app. You get JSON in answer. 
+if `KeyApi` token is True, JSON answer will have field `"app"`, whitch will have fields `"Name"` - it is name your app, `"Des"` - it is description your app and `"KeyApi"` - it is tiken your app.
+#### Code answer:
+200 or 404
+#### Example:
+```
+{
+    "app": {
+        "Name": "ddddddd",
+        "Des": "ffffffffffffffgggggggg",
+        "KeyApi": "1587599498.6985188"
+    }
+}
+```
+
+If `KeyApi` token is False, JSON answer will have field `"detail"` and you get code 404.
+#### Example
+```{
+    "detail": "Not found."
+}
+```
+
+### Update data
+
+You can update data about your app use method `PUT` in `<host>/api/test/<KeyApi>`. Put JSON data in field with name `_content`.
+JSON data must have field `"updateapp"`, which can have fields `"Name"` - it is name your app, `"Des"` - it is descriptor your app. 
+
+if data is true you will have JSON answer with field `"seccees"` and it always is True. Fileds `"Name"` or `"Des"` will be empty.
+
+#### code answer:
+200
+
+#### Example:
+```{
+    "success": "True"
+}```
 
